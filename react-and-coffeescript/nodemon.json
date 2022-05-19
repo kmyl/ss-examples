@@ -1,8 +1,0 @@
-{
-    "ignore":[""],
-
-    "watch": [
-        "*.*",
-        "node_modules/socketstream/lib/**/*"
-    ]
-}
