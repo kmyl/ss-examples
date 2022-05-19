@@ -1,25 +1,20 @@
-// My SocketStream 0.5 app
+// My SocketStream 0.4 app
 
-var ss = require('socketstream'),
-	express = require('socketstream/express'),
-	compression = require('compression'),
-	favicon = require('serve-favicon'),
-	RedisStore = require('connect-redis'),
-	conventions = require('conventions'),
-	cookieParser = require('cookie-parser'),
-	path = require('path');
-
-ss.http.set({ port: 3100 });
-//TODO make this work
-// ss.session.options.secret = 'secret chinese cookie';
-// ss.http.settings.secure = true;
+var ss = require('socketstream');
+express = require('socketstream/express'),
+compression = require('compression'),
+favicon = require('serve-favicon'),
+RedisStore = require('connect-redis'),
+conventions = require('conventions'),
+cookieParser = require('cookie-parser'),
+path = require('path');
 
 // Define a single-page client called 'main'
 ss.client.define('main', {
-  view: 'app.jade',
-  css:  ['../node_modules/normalize.css/normalize.css', './css/app.scss'],
+  view: 'app.html',
+  css:  ['../node_modules/normalize.css/normalize.css', 'app.css'],
   code: ['../node_modules/es6-shim/es6-shim.js', 'libs/jquery.min.js', 'app'],
-  tmpl: '*'
+  tmpl: 'chat'
 });
 
 // Serve this client on the root URL
@@ -27,38 +22,18 @@ ss.http.route('/', function(req, res){
   res.serveClient('main');
 });
 
-ss.client.formatters.add('sass');
-ss.client.formatters.add('jade', {
-	basedir: path.join(__dirname,'client','views')
-});
-
 // Use server-side compiled Hogan (Mustache) templates. Others engines available
-ss.client.templateEngine.use('ss-hogan');
+ss.client.templateEngine.use(require('ss-hogan'));
 
 // Minimize and pack assets if you type: SS_ENV=production node app.js
-if (ss.env === 'production') {
-  ss.client.servePacked();
-  ss.session.store.use('redis');
-  ss.publish.transport.use('redis');
-	//TODO should this be realised in server script running in production?
-	app.locals.cache = 'memory';
-}
-ss.ws.transport.use('sockjs', {
-	client: {
-		cookie:true
-	},
-	server: {
-		jsessionid: true
-	}
-});
+if (ss.env === 'production') ss.client.packAssets();
 
-
-ss.task('application', function() {
+//ss.task('application', function() {
   var app = ss.http.middleware = express();
 
   //express settings
   app.locals.basedir = path.join(__dirname, 'client', 'views');
-  app.set('view engine', 'jade');
+  
 
   app.use(compression());
   app.use(favicon(ss.client.faviconPath));
@@ -74,7 +49,7 @@ ss.task('application', function() {
   app.use(ss.http.cached.middleware);
 
   console.info('Routers:'.grey, conventions.routers().join(' ').replace(/\.\//g,'').replace(/\.router\.js/g,'') || 'None.');
-});
+//});
 
-// direct call just starts the server (unless running with gulp)
+// Start SocketStream
 ss.start();
