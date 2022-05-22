@@ -17,8 +17,8 @@
     "express": "4.18.1",
     "serve-favicon": "2.5.0",
 
-    "engine.io": "3.5.0",
-    "engine.io-client": "3.5.2",
+    "engine.io": "6.2.0",
+    "engine.io-client": "6.2.2",
     
     "socketstream": "https://github.com/kmyl/socketstream",
     "socketstream-cookie-session": "https://github.com/kmyl/socketstream-cookie-session",
